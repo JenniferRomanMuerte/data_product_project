@@ -1,0 +1,135 @@
+dataContractSpecification: 0.9.3
+definitions:
+  timestamp:
+    description: Un timestamp en formato ISO 8601.
+    format: date-time
+    name: timestamp
+    type: string
+examples:
+- data: "{\n  \"Planta\": \"Zona Franca\",\n  \"Lineas_de_trabajo\": [\n    {\n  \
+    \    \"ID_Linea\": \"L1\",\n      \"nombre_linea_de_trabajo\": \"Tratamiento industriales\
+    \ y otros\",\n      \"entrada_material\": 50,\n      \"producto_Salida\": [\n\
+    \        {\n          \"tipo_material\": \"Material A\",\n          \"cantidad\"\
+    : 30\n        },\n        {\n          \"tipo_material\": \"Material B\",\n  \
+    \        \"cantidad\": 20\n        }\n      ],\n      \"consumo_electrico\": 1200,\n\
+    \      \"tiempo_de_paro\": 90\n    }\n  ],\n  \"Gasto_trabajadores\": 25000\n\
+    }\n"
+  description: "Ejemplo de datos de producci\xF3n."
+  model: production
+  type: json
+id: production-data-contract
+info:
+  contact:
+    email: jenniferroman@vt-lab.com
+    name: "Jennifer Rom\xE1n"
+    url: https://teams.microsoft.com/l/channel/example/production
+  description: "Datos en tiempo real sobre la producci\xF3n en la planta de Zona Franca.\
+    \ Incluye consumo el\xE9ctrico, tiempos de paro, gasto de trabajadores y cantidades\
+    \ de material procesado."
+  owner: "Equipo de Producci\xF3n"
+  title: "Producci\xF3n en Tiempo Real"
+  version: 1.0.0
+models:
+  production:
+    description: "Datos de producci\xF3n de la planta."
+    fields:
+      Gasto_trabajadores:
+        description: "Gasto total de los trabajadores (\u20AC)."
+        required: true
+        type: float
+      Lineas_de_trabajo:
+        description: "Lista de l\xEDneas de trabajo en la planta."
+        items:
+          fields:
+            ID_Linea:
+              description: "Identificador de la l\xEDnea de trabajo."
+              required: true
+              type: string
+            consumo_electrico:
+              description: KW consumidos.
+              required: true
+              type: float
+            entrada_material:
+              description: Cantidad de material que entra (Toneladas).
+              required: true
+              type: float
+            nombre_linea_de_trabajo:
+              description: "Nombre de la l\xEDnea de trabajo."
+              required: true
+              type: string
+            producto_Salida:
+              description: Lista de productos de salida.
+              items:
+                fields:
+                  cantidad:
+                    description: Cantidad de material que sale (Toneladas).
+                    required: true
+                    type: float
+                  tipo_material:
+                    description: Tipo de material producido.
+                    required: true
+                    type: string
+                type: object
+              type: array
+            tiempo_de_paro:
+              description: "Tiempo total en minutos de la l\xEDnea de trabajo."
+              required: true
+              type: float
+          type: object
+        type: array
+      Planta:
+        description: Nombre de la planta.
+        required: true
+        type: string
+    type: object
+quality:
+  specification:
+    checks for production:
+    - required_column(Planta)
+    - required_column(Lineas_de_trabajo)
+    - required_column(Gasto_trabajadores)
+  type: custom
+servers:
+  production:
+    format: json
+    path: app/uploads/20240530_102841.json
+    type: local
+servicelevels:
+  availability:
+    description: The server is available during support hours
+    percentage: 99.9%
+  backup:
+    cron: 0 0 * * 0
+    description: Data is backed up once a week, every Sunday at 0:00 UTC.
+    interval: weekly
+    recoveryPoint: 1 week
+    recoveryTime: 24 hours
+  frequency:
+    cron: '* * * * *'
+    description: Data is delivered in real-time upon request
+    interval: real-time
+    type: streaming
+  freshness:
+    description: Data is as fresh as the latest completed transaction
+    threshold: 1m
+    timestampField: last_updated_timestamp
+  latency:
+    description: Data is available immediately after the transaction is processed
+    processedTimestampField: processed_timestamp
+    sourceTimestampField: created_timestamp
+    threshold: 1m
+  retention:
+    description: Data is retained for up to five years to support long-term analysis
+    period: P5Y
+    unlimited: true
+  support:
+    description: 24/7 support is available to ensure critical operations are maintained
+    responseTime: 30m
+    time: 24/7
+terms:
+  billing: Gratis
+  limitations: Not suitable for real-time critical use cases where data is used to
+    identify specific individuals.
+  noticePeriod: P3M
+  usage: Data can be used for reporting, analysis, and machine learning applications.
+    Data linkage and integration with other tables are permitted.

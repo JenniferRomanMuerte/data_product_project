@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+datacontract-cli  # Para inicialización y comprobación de contratos
+pydantic # Validación de datos de entrada y salida en FastAPI y documentación
+jsonschema
+sqlalchemy # Para base de datos
+mysql-connector-python # Conector para la base de datos MySql
