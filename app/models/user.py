@@ -11,6 +11,8 @@ class User(get_base()):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String (60), index=True) 
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
     domain_id = Column(Integer, ForeignKey('domains.id'))
 
     # Relación Domain

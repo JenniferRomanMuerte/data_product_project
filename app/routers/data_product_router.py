@@ -1,33 +1,59 @@
 from fastapi import APIRouter, HTTPException
-
-from app.service.data_contract_service import validate_data_with_datacontract, send_data_to_api
-from app.service.transformers import transform_sap_data, transform_gmao_data, transform_clear_data, transform_bim_data, combine_data
-from app.models.data_models_pydantic import CombinedDataInput
+from pydantic import BaseModel
+from app.service.data_product_service import (
+    create_data_product,
+    get_data_product,
+    get_all_data_products,
+    update_data_product,
+    delete_data_product,
+    delete_all_data_products
+)
 
 router = APIRouter()
 
-@router.post("/process_data/")
-async def process_data(data: CombinedDataInput):
-    """
-    Recibe los datos, los manda a transformar (transformers), los manda a combinarlos para generar el Json (transformers),
-    manda el Json a validar con datacontract - cli (data_contract_service ) y 
-    si se valida correctamente los envía a nuestra API.
-    """
+class DataProductCreate(BaseModel):
+    name: str
+    domain_id: int
+
+class DataProductUpdate(BaseModel):
+    name: str
+    domain_id: int
+
+@router.post("/data_products/")
+async def create_new_data_product(data_product: DataProductCreate):
     try:
-    # Asigna los datos a cada función de transformación según corresponda
-        transformed_data_sap = transform_sap_data(data.sap)
-        transformed_data_gmao = transform_gmao_data(data.gmao)
-        transformed_data_clear = transform_clear_data(data.clear)
-        transformed_data_bim = transform_bim_data(data.bim)
-        
-        # Combina todos los datos transformados en una estructura única
-        combined_data = combine_data(transformed_data_sap, transformed_data_gmao, transformed_data_clear, transformed_data_bim)
-        
-      # Validar los datos antes de enviarlos, los madamos a validar
-        if validate_data_with_datacontract(combined_data):
-            # Si la validación ha sido correcta se envia el JSON
-            response = send_data_to_api(combined_data, "endpoint para dashboard en la API de vt-lab ")
-            return {"message": "Data sent successfully", "api_response": response}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        new_data_product = create_data_product(data_product.name, data_product.domain_id)
+        return {"message": "Data product created successfully", "data_product": new_data_product}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/data_products/{data_product_id}")
+async def read_data_product(data_product_id: int):
+    data_product = get_data_product(data_product_id)
+    if data_product is None:
+        raise HTTPException(status_code=404, detail="Data product not found")
+    return data_product
+
+@router.get("/data_products/")
+async def read_all_data_products():
+    data_products = get_all_data_products()
+    return data_products
+
+@router.put("/data_products/{data_product_id}")
+async def update_existing_data_product(data_product_id: int, data_product: DataProductUpdate):
+    updated_data_product = update_data_product(data_product_id, data_product.name, data_product.domain_id)
+    if updated_data_product is None:
+        raise HTTPException(status_code=404, detail="Data product not found")
+    return {"message": "Data product updated successfully", "data_product": updated_data_product}
+
+@router.delete("/data_products/{data_product_id}")
+async def delete_existing_data_product(data_product_id: int):
+    deleted_data_product = delete_data_product(data_product_id)
+    if deleted_data_product is None:
+        raise HTTPException(status_code=404, detail="Data product not found")
+    return {"message": "Data product deleted successfully"}
+
+@router.delete("/data_products/")
+async def delete_all_data_products_route():
+    num_rows_deleted = delete_all_data_products()
+    return {"message": "All data products deleted successfully", "deleted_count": num_rows_deleted}

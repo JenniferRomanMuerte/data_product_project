@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import data_product_router
+from app.routers import product_dashboard, user_router, domain_router, role_router, policy_router, data_product_router
 
 
 
@@ -17,8 +17,12 @@ app.add_middleware(
     allow_headers=["*"],  # Permite todos los headers.
 )
 
+app.include_router(product_dashboard.router, prefix="/api/v1", tags=["product_dashboard"])
+app.include_router(user_router.router, prefix="/api/v1", tags=["users"])
+app.include_router(domain_router.router, prefix="/api/v1", tags=["domains"])
+app.include_router(role_router.router, prefix="/api/v1", tags=["roles"])
+app.include_router(policy_router.router, prefix="/api/v1", tags=["policies"])
 app.include_router(data_product_router.router, prefix="/api/v1", tags=["data_products"])
-
 
 if __name__ == "__main__":
     import uvicorn
