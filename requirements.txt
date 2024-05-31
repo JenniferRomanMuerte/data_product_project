@@ -6,3 +6,4 @@ jsonschema
 sqlalchemy # Para base de datos
 mysql-connector-python # Conector para la base de datos MySql
 passLib #Para la gestión de contraseñas
+Pylint #Encontrar errores en el códiggo
