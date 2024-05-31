@@ -92,7 +92,7 @@ quality:
 servers:
   production:
     format: json
-    path: app/uploads/20240530_102841.json
+    path: app/uploads/20240531_134426.json
     type: local
 servicelevels:
   availability:

@@ -27,7 +27,7 @@ def create_data_product(name: str, domain_ids: list[int] = None):
         new_data_product = DataProduct(name=name)
         if domain_ids:
             for domain_id in domain_ids:
-                domain = db.query(Domain).get(domain_id)
+                domain = db.get(Domain, domain_id)
                 if domain:
                     new_data_product.domains.append(domain)
         db.add(new_data_product)
@@ -89,7 +89,7 @@ def update_data_product(data_product_id: int, name: str = None, domain_ids: list
     if domain_ids is not None:
         data_product.domains = []
         for domain_id in domain_ids:
-            domain = db.query(Domain).get(domain_id)
+            domain = db.get(Domain, domain_id)
             if domain:
                 data_product.domains.append(domain)
     db.commit()

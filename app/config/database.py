@@ -22,7 +22,20 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 print("Conectando a la base de datos en:", SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+def get_db():
+    """
+    Generador que cierra la sesión de la base de datos después de cada solicitud.
 
+    Yields:
+        db: Sesión de la base de datos.
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+        
 def init_db():
     """
     Función para la creación de las tablas en la base de datos.

@@ -1,11 +1,12 @@
 """
 Este módulo contiene pruebas para los transformadores de datos.
 """
-import yaml
-import json
 import subprocess
+import json
+import yaml
 
-from app.service.transformers import (
+
+from app.data_products.product_dashboard.transformers import (
     transform_sap_data,
     transform_gmao_data,
     transform_clear_data,

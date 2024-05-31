@@ -1,6 +1,3 @@
-"""
-Servicio para la gestión de usuarios y sus roles.
-"""
 from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext
 
@@ -17,12 +14,13 @@ def get_password_hash(password):
     """
     return pwd_context.hash(password)
 
-def create_user(name: str, plain_password: str, domain_id: int, roles: list[int] = None):
+def create_user(name: str, email: str, plain_password: str, domain_id: int, roles: list[int] = None):
     """
     Crea un nuevo usuario con los roles proporcionados.
 
     Args:
         name (str): Nombre del usuario.
+        email (str): Email del usuario.
         plain_password (str): Contraseña en texto plano del usuario.
         domain_id (int): ID del dominio al que pertenece el usuario.
         roles (list[int], optional): Lista de IDs de roles a asignar al usuario.
@@ -36,7 +34,7 @@ def create_user(name: str, plain_password: str, domain_id: int, roles: list[int]
     db = SessionLocal()
     try:
         hashed_password = hash_password(plain_password)
-        new_user = User(name=name, hashed_password=hashed_password, domain_id=domain_id)
+        new_user = User(name=name, email=email, hashed_password=hashed_password, domain_id=domain_id)
         if roles:
             for role_id in roles:
                 role = db.query(Role).get(role_id)
@@ -48,20 +46,11 @@ def create_user(name: str, plain_password: str, domain_id: int, roles: list[int]
         return new_user
     except IntegrityError as exc:
         db.rollback()
-        raise ValueError("User with this name already exists") from exc
+        raise ValueError("User with this name or email already exists") from exc
     finally:
         db.close()
 
 def get_user(user_id: int):
-    """
-    Recupera un usuario por su ID.
-
-    Args:
-        user_id (int): ID del usuario.
-
-    Returns:
-        User: El usuario correspondiente al ID proporcionado, o None si no se encuentra.
-    """
     db = SessionLocal()
     user = db.query(User).filter(User.id == user_id).first()
     db.close()
@@ -79,13 +68,14 @@ def get_all_users():
     db.close()
     return users
 
-def update_user(user_id: int, name: str = None, plain_password: str = None, domain_id: int = None, roles: list[int] = None):
+def update_user(user_id: int, name: str = None, email: str = None, plain_password: str = None, domain_id: int = None, roles: list[int] = None):
     """
     Actualiza un usuario existente.
 
     Args:
         user_id (int): ID del usuario.
         name (str, optional): Nuevo nombre del usuario.
+        email (str, optional): Nuevo email del usuario.
         plain_password (str, optional): Nueva contraseña en texto plano del usuario.
         domain_id (int, optional): Nuevo ID del dominio al que pertenece el usuario.
         roles (list[int], optional): Nueva lista de IDs de roles a asignar al usuario.
@@ -100,6 +90,8 @@ def update_user(user_id: int, name: str = None, plain_password: str = None, doma
         return None
     if name:
         user.name = name
+    if email:
+        user.email = email
     if plain_password:
         user.hashed_password = get_password_hash(plain_password)
     if domain_id:
@@ -153,19 +145,19 @@ def delete_all_users():
     finally:
         db.close()
 
-def authenticate_user(name: str, plain_password: str):
+def authenticate_user(email: str, plain_password: str):
     """
-    Autentica un usuario por su nombre y contraseña en texto plano.
+    Autentica un usuario por su email y contraseña en texto plano.
 
     Args:
-        name (str): Nombre del usuario.
+        email (str): Email del usuario.
         plain_password (str): Contraseña en texto plano del usuario.
 
     Returns:
         User: El usuario autenticado, o None si la autenticación falla.
     """
     db = SessionLocal()
-    user = db.query(User).filter(User.name == name).first()
+    user = db.query(User).filter(User.email == email).first()
     if user and verify_password(plain_password, user.hashed_password):
         return user
     return None

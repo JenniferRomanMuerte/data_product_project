@@ -1,9 +1,9 @@
-from datetime import datetime
-
-
 """
 Este módulo contiene funciones para transformar datos de diferentes fuentes al formato esperado.
 """
+
+from datetime import datetime
+
 
 def transform_sap_data(data: dict) -> dict:
     """
@@ -24,7 +24,7 @@ def transform_gmao_data(data: dict) -> dict:
             {
                 "ID_Linea": line.get("workline_id", ""),
                 "nombre_linea_de_trabajo": line.get("workline_title", ""),
-                "entrada_material": 0,  
+                "entrada_material": 0,
                 "producto_Salida": [],
                 "consumo_electrico": float(line.get("electric_usage", "").split()[0]),
                 "tiempo_de_paro": float(line.get("downtime_total", ""))
@@ -78,8 +78,6 @@ def transform_bim_data(data: dict) -> dict:
         "Gasto_trabajadores": 0  # Desde SAP
     }
 
-
-
 def combine_data(sap_data, gmao_data, clear_data, bim_data):
     """
     Combina los datos transformados de SAP, GMAO, CLEAR y BIM en un único diccionario.
@@ -87,7 +85,6 @@ def combine_data(sap_data, gmao_data, clear_data, bim_data):
 
     # Obtener el timestamp actual en el formato deseado
     current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
 
     combined = {
         "metadata": {

@@ -1,18 +1,9 @@
-"""
-Módulo que define la clase User y sus relaciones.
-"""
-
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-
 from .base import get_base
 from .associations import user_role_association
 
-
 class User(get_base()):
-    """
-    Clase que define la tabla 'users' y sus relaciones.
-    """
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)

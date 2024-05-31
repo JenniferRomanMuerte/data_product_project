@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "timestamp": "2024-05-31T13:44:26",
+    "version": "1.0",
+    "units": {
+      "consumo_electrico": "kW",
+      "tiempo_paro": "minutos",
+      "gasto_trabajadores": "€",
+      "cantidad": "Toneladas",
+      "periocidad_de_los_datos": [
+        "dia",
+        "semana",
+        "mes",
+        "año"
+      ]
+    }
+  },
+  "Planta": "Zona Franca",
+  "Lineas_de_trabajo": [
+    {
+      "ID_Linea": "L1",
+      "nombre_linea_de_trabajo": "Tratamiento industriales y otros",
+      "consumo_electrico": 1200.0,
+      "tiempo_de_paro": 90.0,
+      "entrada_material": 50.0,
+      "producto_Salida": [
+        {
+          "tipo_material": "Material A",
+          "cantidad": 30.0
+        },
+        {
+          "tipo_material": "Material B",
+          "cantidad": 20.0
+        }
+      ]
+    }
+  ],
+  "Gasto_trabajadores": 25000.0
+}
